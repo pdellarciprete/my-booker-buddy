@@ -42,7 +42,7 @@ def book_court(driver, court_preferences):
         desired_date_element = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, f"//td[@data-handler='selectDay' and @data-month='{book_date.month-1}' and @data-year='{book_date.year}']/a[text()='{book_date.day}']"))
         )
-        logging.debug(f"Click the DatePicker input to open the calendar")
+        logging.debug(f"Click the desired date in the calendar")
         desired_date_element.click()
         WebDriverWait(driver, 60)
 
@@ -69,6 +69,10 @@ def book_court(driver, court_preferences):
         conditions_checkbox.click()
         pay_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonPagoSaldo")))
         pay_button.click()
+
+        # Payment confirmation
+        confirm_payment_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")))
+        confirm_payment_button.click()
 
     except Exception as e:
         logging.debug("Taking a final screenshot before closing the WebDriver.")
