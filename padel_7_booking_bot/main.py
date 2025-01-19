@@ -50,7 +50,7 @@ def main():
         logging.info("Login successful!")
 
         # Placeholder for booking functionality
-        court_preferences = {  # Example preferences (to be defined by user)
+        court_preferences = { 
             "date": "2025-01-20",
             "time": "18:00",
             "court_type": "indoor"
@@ -58,7 +58,7 @@ def main():
 
         logging.debug("Attempting to book a court with preferences: %s", court_preferences)
         book_court(driver, court_preferences)
-        logging.info("Court booking successful!")
+        logging.info("Court booked successfully!")
 
     except Exception as e:
         logging.exception("An error occurred: %s", e)

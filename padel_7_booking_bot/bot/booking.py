@@ -4,10 +4,12 @@ import config.settings as settings
 import bot.utils as utils
 
 from datetime import datetime
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+INDOOR_COURTS = ["0","1", "2", "3"]
+OUTDOOR_COURTS = ["8","9", "10", "11"]
 
 def book_court(driver, court_preferences):
     """
@@ -21,7 +23,11 @@ def book_court(driver, court_preferences):
         None
     """
 
+    book_date = utils.get_default_book_date()
+    time_slot = utils.get_default_book_time_slot()
+
     try:
+        logging.info(f"Booking the court for {book_date.strftime('%d-%m-%Y')} at {time_slot}")
         # Open the website
         driver.get(settings.BOOKING_URL)
         logging.debug(f"Going to booking page: {settings.BOOKING_URL}")
@@ -34,21 +40,22 @@ def book_court(driver, court_preferences):
 
         # Find and click the desired date
         desired_date_element = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//td[@data-handler="selectDay" and @data-month="0" and @data-year="2025"]/a[text()="29"]'))  # Example XPath, adjust to match your DatePicker
+            EC.element_to_be_clickable((By.XPATH, f"//td[@data-handler='selectDay' and @data-month='{book_date.month-1}' and @data-year='{book_date.year}']/a[text()='{book_date.day}']"))
         )
         logging.debug(f"Click the DatePicker input to open the calendar")
         desired_date_element.click()
         WebDriverWait(driver, 60)
 
+        # Wait until the court slots are present
+        logging.debug(f"wait until the court slots are present")
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"g[time='{time_slot}'] > rect.buttonHora[habilitado='true']")))
+        available_slots = driver.find_elements(By.CSS_SELECTOR, f"g[time='{time_slot}'] > rect.buttonHora[habilitado='true']")  # Find all clickable slots
+        logging.info(f"Found %d available slots for the desired date", len(available_slots))
 
-        logging.debug(f"wait until the court slot is present")
-        court_slot_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "g[time='18:00-19:30'] > rect.buttonHora[habilitado='true']")))
-        # Some seconds to make sure the court slot is clickable
-        time.sleep(2)
+        # Select the best court
+        utils.select_best_court(driver, available_slots)
 
-        logging.debug(f"Click on the court slot")
-        court_slot_element.click()
-        # Some seconds to make sure the popup is loaded
+        # Wait until the popup is present
         time.sleep(2)
 
         # Popup elements
@@ -70,6 +77,3 @@ def book_court(driver, court_preferences):
         logging.error(f"Error during booking: {e}")
         driver.quit()
         raise e
-
-
-
