@@ -5,7 +5,7 @@ import bot.utils as utils
 from dotenv import load_dotenv
 from datetime import datetime
 from bot.login import login_to_site
-#from bot.booking import book_court  # Placeholder for future booking functionality
+from bot.booking import book_court  # Placeholder for future booking functionality
 
 def setup_logging():
     """
@@ -56,9 +56,9 @@ def main():
             "court_type": "indoor"
         }
 
-        # logging.debug("Attempting to book a court with preferences: %s", court_preferences)
-        # book_court(driver, court_preferences)
-        # logging.info("Court booking successful!")
+        logging.debug("Attempting to book a court with preferences: %s", court_preferences)
+        book_court(driver, court_preferences)
+        logging.info("Court booking successful!")
 
     except Exception as e:
         logging.exception("An error occurred: %s", e)

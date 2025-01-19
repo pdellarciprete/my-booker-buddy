@@ -1,5 +1,8 @@
 import logging
 import config.settings as settings
+import bot.utils as utils
+
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -57,6 +60,9 @@ def login_to_site(username, password):
         return driver
 
     except Exception as e:
+        logging.debug("Taking a final screenshot before closing the WebDriver.")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        utils.save_screenshot(driver, f"error_login_final_state_{timestamp}.png")
         logging.error(f"Error during login: {e}")
         driver.quit()
         raise
