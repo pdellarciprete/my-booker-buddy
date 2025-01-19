@@ -70,9 +70,14 @@ def book_court(driver, court_preferences):
         pay_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonPagoSaldo")))
         pay_button.click()
 
-        # Payment confirmation
-        confirm_payment_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")))
-        confirm_payment_button.click()
+        if settings.DRY_RUN:
+            logging.info("Dry run mode enabled. Skipping payment confirmation.")
+            return
+        else:
+            logging.info("Dry run mode disabled. Proceeding with payment confirmation.")
+            # Payment confirmation
+            confirm_payment_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")))
+            confirm_payment_button.click()
 
     except Exception as e:
         logging.debug("Taking a final screenshot before closing the WebDriver.")
