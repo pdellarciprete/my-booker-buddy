@@ -1,8 +1,34 @@
 import os
 import logging
-import config.settings as settings
 from datetime import datetime, timedelta
+
+from selenium import webdriver
 from selenium.common.exceptions import JavascriptException
+from selenium.webdriver.chrome.service import Service
+
+import config.settings as settings
+
+
+def create_chrome_driver() -> webdriver.Chrome:
+    """
+    Create a chrome driver using Selenium and options
+
+    Returns:
+        Chrome driver
+    """
+    service = Service()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--start-maximized")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(service=service, options=options)
+    return driver
+
 
 def save_screenshot(driver, filename):
     """

@@ -32,8 +32,8 @@ def main():
     load_dotenv()
 
     # Retrieve credentials from environment variables
-    username = os.getenv("USERNAME")
-    password = os.getenv("PASSWORD")
+    username = os.getenv("APP_USERNAME")
+    password = os.getenv("APP_PASSWORD")
 
     if not username or not password:
         logging.error("Username or password not found in environment variables.")
@@ -51,7 +51,7 @@ def main():
 
         # Placeholder for booking functionality
         court_preferences = { 
-            "date": "2025-01-20",
+            "date": "2025-01-26",
             "time": "18:00",
             "court_type": "indoor"
         }

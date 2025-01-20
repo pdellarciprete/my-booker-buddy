@@ -1,7 +1,7 @@
 # GLOBAL SETTINGS
 BASE_URL = "https://padel7santmarti.com"
 TIMEOUT = 10  # Default timeout for Selenium waits
-LOGGING_LEVEL = "INFO"  # Logging level for the bot
+LOGGING_LEVEL = "DEBUG"  # Logging level for the bot
 SCREENSHOT_DIR = "screenshots"  # Directory to save screenshots
 DRY_RUN = True  # Set to True to simulate the booking process without actually booking a court
 
