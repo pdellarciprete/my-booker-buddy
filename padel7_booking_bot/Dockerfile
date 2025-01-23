@@ -18,20 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium-l10n \
     libgconf-2-4
 
-# Install Chrome
-#ARG TARGETPLATFORM
-#RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-#      CHROME_DEB="google-chrome-stable_current_amd64.deb"; \
-#    else \
-#      CHROME_DEB="google-chrome-stable_current_arm64.deb"; \
-#    fi \
-#    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-#    && echo "deb [arch=$(dpkg --print-architecture)] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
-#    && apt-get update \
-#    && wget -O /tmp/$CHROME_DEB https://dl.google.com/linux/direct/$CHROME_DEB \
-#    && apt-get install -y ./tmp/$CHROME_DEB \
-#    && rm /tmp/$CHROME_DEB
-
 # Copy application files
 ADD . /app
 WORKDIR /app
