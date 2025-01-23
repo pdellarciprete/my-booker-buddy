@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 import config.settings as settings
 import bot.utils as utils
 from dotenv import load_dotenv
@@ -26,6 +27,12 @@ def main():
     """
     # Initialize logging
     setup_logging()
+
+    # Set the TZ environment variable for Europe/Madrid timezone
+    os.environ['TZ'] = 'Europe/Madrid'
+    # If the operating system supports, apply the timezone
+    if hasattr(time, 'tzset'):
+        time.tzset()
 
     # Load environment variables from .env file
     logging.debug("Loading environment variables from .env file.")
