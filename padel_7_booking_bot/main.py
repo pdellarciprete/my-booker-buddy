@@ -50,7 +50,7 @@ def main():
         logging.info("Login successful!")
 
         # Placeholder for booking functionality
-        court_preferences = { 
+        court_preferences = {
             "date": "2025-01-26",
             "time": "18:00",
             "court_type": "indoor"

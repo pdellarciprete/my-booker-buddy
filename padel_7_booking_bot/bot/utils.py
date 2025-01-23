@@ -1,13 +1,24 @@
 import os
 import logging
-from datetime import datetime, timedelta
+import config.settings as settings
 
+from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.common.exceptions import JavascriptException
 from selenium.webdriver.chrome.service import Service
 
-import config.settings as settings
 
+def get_service() -> Service:
+    """
+    Get the service for the Chrome driver
+
+    Returns:
+        Service
+    """
+    if (os.path.exists('/usr/bin/chromedriver')):
+        return Service('/usr/bin/chromedriver')
+    else:
+        return Service()
 
 def create_chrome_driver() -> webdriver.Chrome:
     """
@@ -16,7 +27,7 @@ def create_chrome_driver() -> webdriver.Chrome:
     Returns:
         Chrome driver
     """
-    service = Service()
+    service = get_service()
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
