@@ -27,10 +27,7 @@ WORKDIR /app
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
         unzip driver/chromedriver-v34.0.0-linux-arm64 chromedriver -d /usr/bin/ ;\
     else \
-        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-        && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip \
-        && unzip /tmp/chromedriver.zip chromedriver -d /usr/bin/ \
-        && rm /tmp/chromedriver.zip; \
+        unzip driver/chromedriver-linux-x64 chromedriver -d /usr/bin/ ;\
     fi
 
 # Install Python dependencies
