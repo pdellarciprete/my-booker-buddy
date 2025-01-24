@@ -32,6 +32,7 @@ def book_court(driver, court_preferences):
         driver.get(settings.BOOKING_URL)
         logging.debug(f"Going to booking page: {settings.BOOKING_URL}")
         wait = WebDriverWait(driver, 10)
+        time.sleep(2)
 
         # Wait until the DatePicker input is clickable
         datepicker_element = wait.until(EC.presence_of_element_located((By.ID, "fechaTabla")))
