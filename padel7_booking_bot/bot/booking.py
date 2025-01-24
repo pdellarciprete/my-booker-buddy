@@ -48,8 +48,8 @@ def book_court(driver, court_preferences):
 
         # Wait until the court slots are present
         logging.debug(f"wait until the court slots are present")
+        time.sleep(2)
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"g[time='{time_slot}'] > rect.buttonHora[habilitado='true']")))
-        time.sleep(1)
         available_slots = driver.find_elements(By.CSS_SELECTOR, f"g[time='{time_slot}'] > rect.buttonHora[habilitado='true']")  # Find all clickable slots
         logging.info(f"Found %d available slots for the desired date", len(available_slots))
 
