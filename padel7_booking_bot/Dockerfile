@@ -27,7 +27,7 @@ WORKDIR /app
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
         unzip driver/chromedriver-v34.0.0-linux-arm64 chromedriver -d /usr/bin/ ;\
     else \
-        unzip driver/chromedriver-linux64.zip chromedriver-linux64/chromedriver -d /usr/bin/ ;\
+        unzip -j driver/chromedriver-linux64.zip chromedriver-linux64/chromedriver -d /usr/bin/ ;\
     fi
 
 # Install Python dependencies
