@@ -173,3 +173,4 @@ cython_debug/
 # screenshots
 final_state*.png
 error*.png
+.DS_Store
