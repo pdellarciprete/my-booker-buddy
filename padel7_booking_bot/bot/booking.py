@@ -91,7 +91,8 @@ def book_court(driver, court_preferences):
             "time": time_slot,
             "court": court_name,
             "location": "Padel7 Glories, Barcelona",
-            "cost": "€45" if "Outdoor" in court_name else "€48"
+            "cost": "€45" if "Outdoor" in court_name else "€48",
+            "booked_by": os.getenv("APP_USERNAME").split('@')[0]
         }
 
         if settings.DRY_RUN:

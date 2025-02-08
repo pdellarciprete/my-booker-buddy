@@ -66,6 +66,10 @@ def send_booking_notification(webhook_url, token, booking_details):
               {
                 "type": "mrkdwn",
                 "text": f"*💸 Cost:*\n*{booking_details['cost']} (Split it, no excuses! 😜)*"
+              },
+              {
+                "type": "mrkdwn",
+                "text": f"*:man-raising-hand: Booked by:*\n*{booking_details['booked_by']}*"
               }
             ]
           },

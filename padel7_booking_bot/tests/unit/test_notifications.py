@@ -22,7 +22,8 @@ class TestSendSlackNotification(unittest.TestCase):
             "time": "6:00 PM - 7:30 PM",
             "court": "Indoor 1",
             "location": "Padel7 Glories, Barcelona",
-            "cost": "€48"
+            "cost": "€48",
+            "booked_by": "john.doe"
         }
         mock_response = Mock()
         mock_response.status_code = 200
@@ -39,6 +40,7 @@ class TestSendSlackNotification(unittest.TestCase):
         self.assertEqual(json.loads(mock_post.call_args[1]['data'])['blocks'][4]['fields'][0]['text'], f"*🏟️ Court:*\n*{booking_details['court']}*")
         self.assertEqual(json.loads(mock_post.call_args[1]['data'])['blocks'][4]['fields'][1]['text'], f"*📍 Location:*\n*{booking_details['location']}*")
         self.assertEqual(json.loads(mock_post.call_args[1]['data'])['blocks'][6]['fields'][0]['text'], f"*💸 Cost:*\n*{booking_details['cost']} (Split it, no excuses! 😜)*")
+        self.assertEqual(json.loads(mock_post.call_args[1]['data'])['blocks'][6]['fields'][1]['text'], f"*:man-raising-hand: Booked by:*\n*{booking_details['booked_by']}*")
         print("Test for successful notification passed.")
 
     @patch('bot.notifications.requests.post')
@@ -54,7 +56,8 @@ class TestSendSlackNotification(unittest.TestCase):
             "time": "6:00 PM - 7:30 PM",
             "court": "Indoor 1",
             "location": "Padel7 Glories, Barcelona",
-            "cost": "€48"
+            "cost": "€48",
+            "booked_by": "john.doe"
         }
         mock_response = Mock()
         mock_response.status_code = 400

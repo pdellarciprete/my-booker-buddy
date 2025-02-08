@@ -20,7 +20,8 @@ def test_send_slack_notification(setup_environment):
         "time": "6:00 PM - 7:30 PM",
         "court": "Indoor 1",
         "location": "Padel7 Glories, Barcelona",
-        "cost": "€48"
+        "cost": "€48",
+        "booked_by": "john.integrationtest"
     }
     result = send_booking_notification(webhook_url, token, booking_details)
     assert result == None
