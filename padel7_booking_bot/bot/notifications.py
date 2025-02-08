@@ -84,7 +84,7 @@ def send_booking_notification(webhook_url, token, booking_details):
         ]
     }
 
-    logging.info(f"payload : {payload}")
+    logging.debug(f"payload : {payload}")
 
     # Send the payload to the Slack webhook
     response = requests.post(

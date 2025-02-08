@@ -7,6 +7,18 @@ from selenium import webdriver
 from selenium.common.exceptions import JavascriptException
 from selenium.webdriver.chrome.service import Service
 
+COURTS = {
+    "0": "Indoor 1",
+    "1": "Indoor 2",
+    "2": "Indoor 3",
+    "3": "Indoor 4",
+    "5": "Outdoor 5",
+    "6": "Outdoor 6",
+    "8": "Outdoor 7",
+    "9": "Outdoor 8",
+    "10": "Outdoor 9",
+    "11": "Outdoor 10"
+}
 
 def get_service() -> Service:
     """
@@ -59,7 +71,7 @@ def save_screenshot(driver, filename):
 
 def get_default_book_date():
     # Calculate the date 10 days from today
-    return datetime.now() + timedelta(days=10)
+    return datetime.now() + timedelta(days=9)
 
 def get_default_book_time_slot():
     # Calculate the date 10 days from today
@@ -67,15 +79,17 @@ def get_default_book_time_slot():
 
 def select_best_court(driver, available_slots):
     court_dict = get_courts_dict(available_slots)
-    logging.info("The courts available are: %s", court_dict.keys())
+    # Retrieve court names using keys
+    court_names = [COURTS[str(key)] for key in court_dict.keys() if str(key) in COURTS]
+    logging.info("The courts available are: %s", ", ".join(court_names))
     court_number = min(court_dict.keys()) # precedence to INDOOR COURTS
     try:
-        logging.info("Trying to book the court number %s ... ", court_number)
+        logging.info("Trying to book the court %s ... ", COURTS[str(court_number)])
         driver.execute_script(court_dict[court_number])
     except JavascriptException as e:
-        logging.info("The court number %s is not bookable! :( ", court_number)
+        logging.info("The court %s is not bookable! :( ", COURTS[str(court_number)])
         return False
-    return True
+    return COURTS[str(court_number)]
 
 def get_courts_dict(available_slots):
     court_dict = {}
