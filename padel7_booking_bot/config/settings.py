@@ -14,5 +14,4 @@ LOGIN_BUTTON_ID = "ctl00_ContentPlaceHolderContenido_Login1_LoginButton"
 LOGIN_POST_LOGIN_ELEMENT_ID = "ctl00_ctl00_ContentPlaceHolderContenido_WUCMenuLateralIzquierdaIntranet_imgSocio"
 
 # BOOKING SETTINGS
-
 BOOKING_URL = BASE_URL + "/Booking/Grid.aspx?id=8"
