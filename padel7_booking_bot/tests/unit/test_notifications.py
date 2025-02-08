@@ -14,8 +14,8 @@ class TestSendSlackNotification(unittest.TestCase):
 
         load_dotenv()
 
-        # Personal chat with Pier
-        webhook_url = settings.SLACK_TEST_WEBHOOK_URL
+        # channel for testing #test
+        webhook_url = os.getenv("APP_SLACK_TEST_WEBHOOK_URL")
         token = os.getenv("APP_SLACK_TOKEN")
         booking_details = {
             "date": "February 18th, 2025",
@@ -46,8 +46,8 @@ class TestSendSlackNotification(unittest.TestCase):
 
         load_dotenv()
 
-        # Personal chat with Pier
-        webhook_url = settings.SLACK_TEST_WEBHOOK_URL
+        # channel for testing #test
+        webhook_url = os.getenv("APP_SLACK_TEST_WEBHOOK_URL")
         token = os.getenv("APP_SLACK_TOKEN")
         booking_details = {
             "date": "February 18th, 2025",
