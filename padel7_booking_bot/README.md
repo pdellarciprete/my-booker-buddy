@@ -8,6 +8,7 @@ This project is a Selenium-based bot designed to automate the booking process fo
 padel_booking_bot/
 ├── README.md                  # Documentation for the project
 ├── requirements.txt           # List of dependencies (e.g., Selenium, requests)
+├── requirements-test.txt      # List of dependencies for testing (e.g., pytest)
 ├── .env                       # Environment file for sensitive data (e.g., credentials)
 ├── main.py                    # Entry point for the bot
 ├── config/
@@ -19,9 +20,11 @@ padel_booking_bot/
 │   └── utils.py               # Helper functions (e.g., wait utilities, logging)
 ├── logs/
 │   └── bot.log                # Logs for debugging and monitoring
-└── screenshots/               # Folder for storing screenshots (e.g., for debugging)
-    └── example.png            # Example screenshot
-
+├── screenshots/               # Folder for storing screenshots (e.g., for debugging)
+│   └── example.png            # Example screenshot
+└── tests/                     # Folder for unit and integration tests
+    ├── unit                   # Folder for unit tests
+    └── integration            # Folder for integration tests
 ```
 
 ## Explanation of Components
@@ -95,9 +98,15 @@ Saves screenshots of the browser (useful for debugging or verifying bot actions)
     ```
 
 3. Create a `.env` file with your credentials:
+
     ```env
-    USERNAME=your_username
-    PASSWORD=your_password
+    # sensitive data don't commit to git!!!
+    APP_USERNAME=xxx
+    APP_PASSWORD=xxx
+    APP_ENV=dev
+    APP_SLACK_TOKEN=xxxx
+    APP_SLACK_PROD_WEBHOOK_URL=xxx # channel #padeleros-anonimos
+    APP_SLACK_TEST_WEBHOOK_URL=xxx # channel #test
     ```
 
 4. Run the bot:
