@@ -71,7 +71,7 @@ def save_screenshot(driver, filename):
 
 def get_default_book_date():
     # Calculate the date 10 days from today
-    return datetime.now() + timedelta(days=9)
+    return datetime.now() + timedelta(days=10)
 
 def get_default_book_time_slot():
     # Calculate the date 10 days from today

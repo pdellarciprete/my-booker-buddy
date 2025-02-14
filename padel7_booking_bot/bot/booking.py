@@ -97,14 +97,16 @@ def book_court(driver, court_preferences):
 
         if settings.DRY_RUN:
             logging.info("Dry run mode enabled. Skipping payment confirmation.")
-            notifications.send_booking_notification(os.getenv("APP_SLACK_TEST_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
+            if settings.NOTIFICATION_ENABLED:
+                notifications.send_booking_notification(os.getenv("APP_SLACK_TEST_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
             return
         else:
             logging.info("Dry run mode disabled. Proceeding with payment confirmation.")
             # Payment confirmation
             confirm_payment_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")))
             confirm_payment_button.click()
-            notifications.send_booking_notification(os.getenv("APP_SLACK_PROD_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
+            if settings.NOTIFICATION_ENABLED:
+                notifications.send_booking_notification(os.getenv("APP_SLACK_PROD_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
 
     except selenium.common.exceptions.TimeoutException as e:
         logging.error(f"Timeout while waiting for the court slots. Probably the slots are not available for the desired date and time.")
