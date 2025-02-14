@@ -6,7 +6,7 @@ import bot.utils as utils
 from dotenv import load_dotenv
 from datetime import datetime
 from bot.login import login_to_site
-from bot.booking import book_court  # Placeholder for future booking functionality
+from bot.booking import book_court
 
 def setup_logging():
     """
@@ -54,7 +54,7 @@ def main():
     try:
         logging.debug("Attempting to log in to the site.")
         driver = login_to_site(username, password)
-        logging.info("Login successful!")
+        logging.info("Login successful with the username : %s", username)
 
         # Placeholder for booking functionality
         court_preferences = {
