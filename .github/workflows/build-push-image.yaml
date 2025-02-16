@@ -17,7 +17,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Run Pytest
+    name: Unit Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
