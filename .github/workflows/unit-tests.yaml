@@ -11,8 +11,6 @@ name: Python Unit Tests
 
 on:
   push:
-    paths:
-      - 'padel7_booking_bot/**'
     branches:
       - 'feat/**'
 
