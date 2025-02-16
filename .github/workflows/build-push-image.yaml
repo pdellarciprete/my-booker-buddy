@@ -40,12 +40,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           ls -l
-          pip install -r ./padel_7_booking_bot/requirements.txt
-          pip install -r ./padel_7_booking_bot/requirements-test.txt
+          pip install -r ./padel7_booking_bot/requirements.txt
+          pip install -r ./padel7_booking_bot/requirements-test.txt
 
-      - name: Run Pytest in padel_7_booking_bot
+      - name: Run Pytest in padel7_booking_bot
         run: pytest --ignore=tests/integration
-        working-directory: padel_7_booking_bot
+        working-directory: padel7_booking_bot
 
   push_to_registry:
     name: Push Docker image to Docker Hub
