@@ -14,10 +14,29 @@ on:
     branches:
       - 'feat/**'
 
+env:
+  SKIP: false
+
 jobs:
+  check-code-changes:
+    name: Check code changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if tests should run
+        id: check_files
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^padel_7_booking_bot/' || true)
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No source code changes, skipping tests."
+            echo "SKIP=true" >> $GITHUB_ENV
+          fi
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
+    if: ${{ env.skip != 'true' }}
     strategy:
       matrix:
         arch: [amd64, arm64]
