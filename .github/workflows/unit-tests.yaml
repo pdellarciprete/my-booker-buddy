@@ -14,9 +14,6 @@ on:
     branches:
       - 'feat/**'
 
-env:
-  SKIP: false
-
 jobs:
   check-code-changes:
     name: Check code changes
@@ -33,10 +30,13 @@ jobs:
             echo "No source code changes, skipping tests."
             echo "SKIP=true" >> $GITHUB_ENV
           fi
+      - name: Set output
+        run: echo "::set-output name=skip::${{ env.SKIP }}"
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    if: ${{ env.skip != 'true' }}
+    needs: check-code-changes
+    if: ${{ needs.check-code-changes.outputs.skip != 'true' }}
     strategy:
       matrix:
         arch: [amd64, arm64]
