@@ -32,11 +32,17 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: check-code-changes
-    if: needs.check-code-changes.outputs.skip == 'false'  # Correct condition
     strategy:
       matrix:
         arch: [amd64, arm64]
     steps:
+      # This step marks the workflow as successful when tests are skipped
+      - name: Mark Tests as Successful if Skipped
+        if: needs.check-code-changes.outputs.skip == 'true'
+        run: |
+          echo "No source code changes. Marking tests as successful."
+          exit 0  # Ensure job succeeds
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
