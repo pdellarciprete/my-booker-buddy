@@ -39,6 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          ls -l
           pip install -r ./padel_7_booking_bot/requirements.txt
           pip install -r ./padel_7_booking_bot/requirements-test.txt
 
