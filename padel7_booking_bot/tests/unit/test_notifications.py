@@ -1,7 +1,6 @@
 import unittest
 import json
 import os
-from config import settings
 from bot import notifications
 from unittest.mock import patch, Mock
 
