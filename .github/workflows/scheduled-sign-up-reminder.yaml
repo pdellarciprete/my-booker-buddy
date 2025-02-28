@@ -1,0 +1,45 @@
+name: "[Scheduled] Sign up Slack reminder"
+on:
+  schedule:
+    - cron: "0 10 * * FRI"
+
+jobs:
+  send_message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set Date and Time Variables
+        run: |
+          TARGET_DATE=$(date -u -d "+11 days" +"%d/%m/%Y")
+          TARGET_WEEKDAY=$(date -u -d "+11 days" +"%A")
+          echo "Target date: $TARGET_WEEKDAY $TARGET_DATE"
+          echo "TARGET_DATE=$TARGET_DATE" >> $GITHUB_ENV
+          echo "TARGET_WEEKDAY=$TARGET_WEEKDAY" >> $GITHUB_ENV
+
+      - name: Replace Placeholders in JSON
+        env:
+            TARGET_DATE: ${{ env.TARGET_DATE }}
+            TARGET_WEEKDAY: ${{ env.TARGET_WEEKDAY }}
+        run: |
+          export USER=$(echo ${{secrets.APP_USERNAME}} | sed 's/./& /g' | sed 's/ //g')
+          export PASSWORD=$(echo ${{secrets.APP_PASSWORD}} | sed 's/./& /g' | sed 's/ //g')
+          MESSAGE_JSON=$(cat .github/utils/message_template.json |
+          sed "s#\$WEEK_DAY#${TARGET_WEEKDAY}#g" |
+          sed "s#\$DATE#${TARGET_DATE}#g" |
+          sed "s#\$USER#${USER}#g" |
+          sed "s#\$PASSWORD#${PASSWORD}#g")
+          echo "$MESSAGE_JSON" > /tmp/slack_message.json
+          cat /tmp/slack_message.json
+
+      - name: Send Slack Message
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          errors: true
+          webhook: ${{ secrets.APP_SLACK_PROD_WEBHOOK_URL }}
+          webhook-type: webhook-trigger
+          payload-file-path: "/tmp/slack_message.json"

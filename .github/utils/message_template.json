@@ -1,0 +1,35 @@
+{
+  "blocks":[
+    {
+      "type":"section",
+      "text":{
+        "type":"mrkdwn",
+        "text":"*🎾 Sign Up Thread: Pádel for $WEEK_DAY $DATE, 18:00-19:30 (3 Courts, 12 People) 🎾*"
+      }
+    },
+    {
+      "type":"divider"
+    },
+    {
+      "type":"section",
+      "text":{
+        "type":"mrkdwn",
+        "text":"*🤑 Payment Instructions:* Please pay now, you can sign in to the <https://padel7santmarti.com/Login.aspx> shared account: \n\t\t• *User:* $USER\n\t\t• *Password:* `$PASSWORD` \n Recharge the account's wallet with *€12.00* in 'Control de Saldo' section."
+      }
+    },
+    {
+      "type":"section",
+      "text":{
+        "type":"mrkdwn",
+        "text":":thread: *Please add your comment in the thread to say you paid or mark a :done_green: on your comment.* Based on the number of people, we will reduce courts if necessary (e.g., if fewer than 12, it will be 2 courts)."
+      }
+    },
+    {
+      "type":"section",
+      "text":{
+        "type":"mrkdwn",
+        "text":":pepe-cowboy: Sorry for the additional work - but this is the best way to guarantee spots for everyone. If you want to book your own court, please feel free :pepe-ez:"
+      }
+    }
+  ]
+}
