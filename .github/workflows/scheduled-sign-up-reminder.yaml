@@ -29,10 +29,8 @@ jobs:
             TARGET_DATE: ${{ env.TARGET_DATE }}
             TARGET_WEEKDAY: ${{ env.TARGET_WEEKDAY }}
         run: |
-          export USER=$(echo ${{secrets.APP_USERNAME}} | sed 's/./& /g')
-          export PASSWORD=$(echo ${{secrets.APP_PASSWORD}} | sed 's/./& /g')
-          echo "User: $USER"
-          echo "Password: $PASSWORD"
+          export USER=$(echo ${{secrets.APP_USERNAME}} | sed 's/./& /g' | sed 's/ //g')
+          export PASSWORD=$(echo ${{secrets.APP_PASSWORD}} | sed 's/./& /g' | sed 's/ //g')
           MESSAGE_JSON=$(cat .github/utils/message_template.json |
           sed "s#\$WEEK_DAY#${TARGET_WEEKDAY}#g" |
           sed "s#\$DATE#${TARGET_DATE}#g" |
