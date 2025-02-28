@@ -1,7 +1,7 @@
 name: "[Scheduled] Sign up Slack reminder"
 on:
   schedule:
-    - cron: "02 16 * * FRI"
+    - cron: "02 17 * * FRI"
   push:
     branches:
       - feat/schedule-reminder
@@ -28,9 +28,11 @@ jobs:
         env:
             TARGET_DATE: ${{ env.TARGET_DATE }}
             TARGET_WEEKDAY: ${{ env.TARGET_WEEKDAY }}
-            USER: ${{ secrets.APP_USERNAME }}
-            PASSWORD: ${{ secrets.APP_PASSWORD }}
         run: |
+          export USER=$(echo ${{secrets.APP_USERNAME}} | sed 's/./& /g')
+          export PASSWORD=$(echo ${{secrets.APP_PASSWORD}} | sed 's/./& /g')
+          echo "User: $USER"
+          echo "Password: $PASSWORD"
           MESSAGE_JSON=$(cat .github/utils/message_template.json |
           sed "s#\$WEEK_DAY#${TARGET_WEEKDAY}#g" |
           sed "s#\$DATE#${TARGET_DATE}#g" |

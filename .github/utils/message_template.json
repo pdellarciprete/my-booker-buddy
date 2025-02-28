@@ -14,7 +14,7 @@
       "type":"section",
       "text":{
         "type":"mrkdwn",
-        "text":"*🤑 Payment Instructions:* Please pay now, you can sign in to the <https://padel7santmarti.com/Login.aspx> shared account: \n\t\t• *User:* $USER\\n\\t\\t• *Password:* `$PASSWORD` \nRecharge the account''s wallet with *€12.00*"
+        "text":"*🤑 Payment Instructions:* Please pay now, you can sign in to the <https://padel7santmarti.com/Login.aspx> shared account: \n\t\t• *User:* $USER\\n\\t\\t• *Password:* `$PASSWORD` \n and recharge the account''s wallet with *€12.00* in 'Control de Saldo' section."
       }
     },
     {
@@ -28,7 +28,7 @@
       "type":"section",
       "text":{
         "type":"mrkdwn",
-        "text":":pepe-cowboy: Sorry for the additional work - this is to use me to book court. If you want to book your own court, please feel free :pepe-ez:"
+        "text":":pepe-cowboy: Sorry for the additional work - but this way is easier to guarantee spots for everyone. If you want to book your own court, please feel free :pepe-ez:"
       }
     }
   ]
