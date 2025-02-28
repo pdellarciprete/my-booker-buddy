@@ -1,7 +1,7 @@
 name: "[Scheduled] Sign up Slack reminder"
 on:
   schedule:
-    - cron: "0 10 * * FRI"
+    - cron: "02 16 * * FRI"
   push:
     branches:
       - feat/schedule-reminder
