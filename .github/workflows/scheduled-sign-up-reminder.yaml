@@ -1,7 +1,7 @@
 name: "[Scheduled] Sign up Slack reminder"
 on:
   schedule:
-    - cron: "0 10 * * FRI"
+    - cron: "12 10 * * FRI"
 
 jobs:
   send_message:
