@@ -1,7 +1,7 @@
 name: "[Scheduled] Sign up Slack reminder"
 on:
   schedule:
-    - cron: "12 10 * * FRI"
+    - cron: "12 10 * * THU"
 
 jobs:
   send_message:
@@ -15,8 +15,8 @@ jobs:
 
       - name: Set Date and Time Variables
         run: |
-          TARGET_DATE=$(date -u -d "+11 days" +"%d/%m/%Y")
-          TARGET_WEEKDAY=$(date -u -d "+11 days" +"%A")
+          TARGET_DATE=$(date -u -d "+12 days" +"%d/%m/%Y")
+          TARGET_WEEKDAY=$(date -u -d "+12 days" +"%A")
           echo "Target date: $TARGET_WEEKDAY $TARGET_DATE"
           echo "TARGET_DATE=$TARGET_DATE" >> $GITHUB_ENV
           echo "TARGET_WEEKDAY=$TARGET_WEEKDAY" >> $GITHUB_ENV
