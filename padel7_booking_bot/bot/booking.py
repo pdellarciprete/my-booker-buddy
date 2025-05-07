@@ -34,14 +34,15 @@ def book_court(driver, court_preferences):
         court_preferences (dict): A dictionary containing court preferences.
 
     Returns:
-        None
+        bool: True if booking was successful, False otherwise
     """
 
     book_date = utils.get_default_book_date()
     time_slot = utils.get_default_book_time_slot()
+    booking_successful = False
 
     try:
-        logging.info(f"Booking the court for {book_date.strftime("%B %d, %Y")} at {time_slot}")
+        logging.info(f"Booking the court for {book_date.strftime('%B %d, %Y')} at {time_slot}")
         # Open the website
         driver.get(settings.BOOKING_URL)
         logging.debug(f"Going to booking page: {settings.BOOKING_URL}")
@@ -97,24 +98,30 @@ def book_court(driver, court_preferences):
 
         if settings.DRY_RUN:
             logging.info("Dry run mode enabled. Skipping payment confirmation.")
-            if settings.NOTIFICATION_ENABLED:
-                notifications.send_booking_notification(os.getenv("APP_SLACK_TEST_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
-            return
+            # Consider the booking successful even in dry run mode
+            booking_successful = True
         else:
             logging.info("Dry run mode disabled. Proceeding with payment confirmation.")
             # Payment confirmation
             confirm_payment_button = wait.until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")))
             confirm_payment_button.click()
-            if settings.NOTIFICATION_ENABLED:
-                notifications.send_booking_notification(os.getenv("APP_SLACK_PROD_WEBHOOK_URL"), os.getenv("APP_SLACK_TOKEN"), booking_details)
+            # Mark booking as successful after confirmation
+            booking_successful = True
+            
+        # Only send notification if booking was successful
+        if booking_successful and settings.NOTIFICATION_ENABLED:
+            webhook_url = os.getenv("APP_SLACK_TEST_WEBHOOK_URL") if settings.DRY_RUN else os.getenv("APP_SLACK_PROD_WEBHOOK_URL")
+            notifications.send_booking_notification(webhook_url, os.getenv("APP_SLACK_TOKEN"), booking_details)
+            
+        return booking_successful
 
     except selenium.common.exceptions.TimeoutException as e:
         logging.error(f"Timeout while waiting for the court slots. Probably the slots are not available for the desired date and time.")
-        sys.exit(1)
+        raise e
     except Exception as e:
         logging.debug("Taking a final screenshot before closing the WebDriver.")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         utils.save_screenshot(driver, f"error_booking_final_state_{timestamp}.png")
         logging.error(f"Error during booking: {e}")
         raise e
-
+    
