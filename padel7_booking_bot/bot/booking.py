@@ -158,9 +158,10 @@ def book_court(driver, court_preferences):
                         f"Unexpected confirmation text: '{confirmation_element.text}'"
                     )
                     booking_successful = False
-            except selenium.common.exceptions.TimeoutException:
+            except selenium.common.exceptions.TimeoutException as e:
                 logging.error("Timed out waiting for booking confirmation")
                 booking_successful = False
+                raise e
 
         # Only send notification if booking was successful
         if booking_successful and settings.NOTIFICATION_ENABLED:
@@ -179,10 +180,10 @@ def book_court(driver, court_preferences):
         logging.error(
             f"Timeout while waiting for the court slots. Probably the slots are not available for the desired date and time."
         )
-        return False
+        raise e
     except Exception as e:
         logging.debug("Taking a final screenshot before closing the WebDriver.")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         utils.save_screenshot(driver, f"error_booking_final_state_{timestamp}.png")
         logging.error(f"Error during booking: {e}")
-        return False
+        raise e
