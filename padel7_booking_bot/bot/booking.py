@@ -1,7 +1,6 @@
 import logging
 import time
 import os
-import sys
 import config.settings as settings
 import bot.utils as utils
 import bot.notifications as notifications
@@ -38,14 +37,21 @@ def book_court(driver, court_preferences):
         bool: True if booking was successful, False otherwise
     """
 
-    book_date = utils.get_default_book_date()
-    time_slot = utils.get_default_book_time_slot()
     booking_successful = False
-
     try:
+        if court_preferences['date'] and court_preferences['time']:
+            book_date = datetime.strptime(court_preferences['date'], "%Y-%m-%d")
+            time_slot = court_preferences['time']
+        else:
+            # Fallback to default date and time if not provided
+            logging.warning("No date or time provided. Using default values.")
+            book_date = utils.get_default_book_date()
+            time_slot = utils.get_default_book_time_slot()
+        
         logging.info(
             f"Booking the court for {book_date.strftime('%B %d, %Y')} at {time_slot}"
-        )
+            )
+        
         # Open the website
         driver.get(settings.BOOKING_URL)
         logging.debug(f"Going to booking page: {settings.BOOKING_URL}")
@@ -92,8 +98,30 @@ def book_court(driver, court_preferences):
         )
 
         # Select the best court
-        court_name = utils.select_best_court(driver, available_slots)
-
+        court_name = utils.select_best_court(driver, 
+                                            available_slots, 
+                                            court_preferences["court_type"])
+        
+        if court_name is False:
+            court_name = "No court available"
+            booking_details = {
+                "date": book_date.strftime("%B %d, %Y"),
+                "time": time_slot,
+                "court": court_name,
+                "location": "Padel7 Glories, Barcelona",
+                "cost": "€45" if "Outdoor" in court_name else "€48",
+                "booked_by": os.getenv("APP_USERNAME").split("@")[0],
+            }
+            return booking_details, booking_successful
+        else:
+            booking_details = {
+                "date": book_date.strftime("%B %d, %Y"),
+                "time": time_slot,
+                "court": court_name,
+                "location": "Padel7 Glories, Barcelona",
+                "cost": "€45" if "Outdoor" in court_name else "€48",
+                "booked_by": os.getenv("APP_USERNAME").split("@")[0],
+            }    
         # Wait until the popup is present
         time.sleep(2)
 
@@ -120,15 +148,6 @@ def book_court(driver, court_preferences):
         )
         pay_button.click()
 
-        booking_details = {
-            "date": book_date.strftime("%B %d, %Y"),
-            "time": time_slot,
-            "court": court_name,
-            "location": "Padel7 Glories, Barcelona",
-            "cost": "€45" if "Outdoor" in court_name else "€48",
-            "booked_by": os.getenv("APP_USERNAME").split("@")[0],
-        }
-
         if settings.DRY_RUN:
             logging.info("Dry run mode enabled. Skipping payment confirmation.")
             # Consider the booking successful even in dry run mode
@@ -144,46 +163,23 @@ def book_court(driver, court_preferences):
             confirm_payment_button.click()
 
             # Wait for confirmation screen and verify "RESERVA CONFIRMADA" text
-            try:
-                confirmation_element = wait.until(
-                    EC.presence_of_element_located(
-                        (By.ID, "ctl00_ContentPlaceHolderContenido_LabelReservaPistas")
-                    )
+        
+            confirmation_element = wait.until(
+                EC.presence_of_element_located(
+                    (By.ID, "ctl00_ContentPlaceHolderContenido_LabelReservaPistas")
                 )
-                if "RESERVA CONFIRMADA" in confirmation_element.text:
-                    logging.info("Booking confirmed successfully!")
-                    booking_successful = True
-                else:
-                    logging.error(
-                        f"Unexpected confirmation text: '{confirmation_element.text}'"
-                    )
-                    booking_successful = False
-            except selenium.common.exceptions.TimeoutException as e:
-                logging.error("Timed out waiting for booking confirmation")
+            )
+            if "RESERVA CONFIRMADA" in confirmation_element.text:
+                logging.info("Booking confirmed successfully!")
+                booking_successful = True
+            else:
+                logging.error(
+                    f"Unexpected confirmation text: '{confirmation_element.text}'"
+                )
                 booking_successful = False
-                raise e
-
-        # Only send notification if booking was successful
-        if booking_successful and settings.NOTIFICATION_ENABLED:
-            webhook_url = (
-                os.getenv("APP_SLACK_TEST_WEBHOOK_URL")
-                if settings.DRY_RUN
-                else os.getenv("APP_SLACK_PROD_WEBHOOK_URL")
-            )
-            notifications.send_booking_notification(
-                webhook_url, os.getenv("APP_SLACK_TOKEN"), booking_details
-            )
-
-        return booking_successful
-
     except selenium.common.exceptions.TimeoutException as e:
-        logging.error(
-            f"Timeout while waiting for the court slots. Probably the slots are not available for the desired date and time."
-        )
-        raise e
-    except Exception as e:
-        logging.debug("Taking a final screenshot before closing the WebDriver.")
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        utils.save_screenshot(driver, f"error_booking_final_state_{timestamp}.png")
-        logging.error(f"Error during booking: {e}")
-        raise e
+        logging.error("Timed out waiting for booking confirmation")
+        logging.debug("Exception details: %s", e)
+        booking_successful = False
+
+    return booking_details, booking_successful

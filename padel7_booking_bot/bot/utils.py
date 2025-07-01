@@ -1,7 +1,7 @@
 import os
 import logging
 import config.settings as settings
-
+import sys
 from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.common.exceptions import JavascriptException
@@ -17,8 +17,23 @@ COURTS = {
     "8": "Outdoor 7",
     "9": "Outdoor 8",
     "10": "Outdoor 9",
-    "11": "Outdoor 10"
+    "11": "Outdoor 10",
 }
+
+
+def setup_logging():
+    """
+    Sets up logging configuration to log all events at DEBUG level.
+    """
+    logging.basicConfig(
+        level=settings.LOGGING_LEVEL,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler("logs/bot.log"),  # Logs to a file
+            logging.StreamHandler(),  # Logs to the console
+        ],
+    )
+
 
 def get_service() -> Service:
     """
@@ -27,10 +42,11 @@ def get_service() -> Service:
     Returns:
         Service
     """
-    if (os.path.exists('/usr/bin/chromedriver')):
-        return Service('/usr/bin/chromedriver')
+    if os.path.exists("/usr/bin/chromedriver"):
+        return Service("/usr/bin/chromedriver")
     else:
         return Service()
+
 
 def create_chrome_driver() -> webdriver.Chrome:
     """
@@ -69,20 +85,36 @@ def save_screenshot(driver, filename):
     driver.save_screenshot(filepath)
     logging.info("Screenshot saved: %s", filepath)
 
+
 def get_default_book_date():
     # Calculate the date 10 days from today
     return datetime.now() + timedelta(days=10)
+
 
 def get_default_book_time_slot():
     # Calculate the date 10 days from today
     return "18:00-19:30"
 
-def select_best_court(driver, available_slots):
+
+def select_best_court(driver, available_slots, court_type):
     court_dict = get_courts_dict(available_slots)
     # Retrieve court names using keys
     court_names = [COURTS[str(key)] for key in court_dict.keys() if str(key) in COURTS]
     logging.info("The courts available are: %s", ", ".join(court_names))
-    court_number = min(court_dict.keys()) # precedence to INDOOR COURTS
+    if court_type.lower() not in ", ".join(court_names).lower() and court_type.lower() != "both":
+        logging.info("No %s courts available! :(", court_type)
+        logging.info("Attempting to book any available court ...")
+        # If the court type is not specified or not available, select the first available court
+        court_type = "both"
+
+    if court_type.lower() == "indoor":
+        court_number = min([key for key in court_dict.keys() if key < 5])
+
+    elif court_type.lower() == "outdoor":
+        court_number = min([key for key in court_dict.keys() if key >= 5])
+    else:
+        court_number = min(court_dict.keys())  # precedence to INDOOR COURTS
+    
     try:
         logging.info("Trying to book the court %s ... ", COURTS[str(court_number)])
         driver.execute_script(court_dict[court_number])
@@ -90,6 +122,7 @@ def select_best_court(driver, available_slots):
         logging.info("The court %s is not bookable! :( ", COURTS[str(court_number)])
         return False
     return COURTS[str(court_number)]
+
 
 def get_courts_dict(available_slots):
     court_dict = {}
