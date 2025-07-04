@@ -3,7 +3,9 @@ name: Python Unit Tests
 on:
   push:
     branches:
-      - 'feat/**'
+      - '**'
+      - '!main'
+
 
 jobs:
   check-code-changes:

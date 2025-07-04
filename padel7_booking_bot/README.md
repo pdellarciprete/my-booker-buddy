@@ -111,10 +111,31 @@ Saves screenshots of the browser (useful for debugging or verifying bot actions)
 
 4. Run the bot:
     ```bash
-    python main.py
+    python main.py [OPTIONS]
     ```
+
+## Available Options
+
+| Option            | Type   | Default                            | Description                                            |
+| ----------------- | ------ | ---------------------------------- | ------------------------------------------------------ |
+| `--dry-run`       | Flag   | `False`                            | Run in simulation mode without making actual bookings. |
+| `--verbose`       | Flag   | `False`                            | Enable debug-level logging.                            |
+| `--date`          | String | (next booking date, e.g. tomorrow) | Date of the desired booking in `YYYY-MM-DD` format.    |
+| `--time`          | String | (preferred default time slot)      | Time of booking in `HH:MM` format.                     |
+| `--court-type`    | String | `"both"`                           | Court preference: `indoor`, `outdoor`, or `both`.      |
+| `--notifications` | Flag   | From `settings.py`                 | Enable Slack notifications if properly configured.     |
 
 ## Example Workflow
 1. The bot uses `login.py` to log in to the website.
-2. It uses `booking.py` to automate the booking process based on user preferences.
+2. It uses `booking.py` to automate the booking process based on user preferences
+If court type is not available, it will attempt to book any court type.
 3. Logs are saved in `logs/bot.log`, and screenshots are saved in `screenshots/` in case of errors.
+
+## Example with Docker
+
+docker run padel-bot \
+  --date 2025-07-04 \
+  --time 18:00 \
+  --court-type indoor \
+  --dry-run \
+  --verbose

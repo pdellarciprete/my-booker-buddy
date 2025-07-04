@@ -1,7 +1,7 @@
 import logging
 import config.settings as settings
 import bot.utils as utils
-
+from time import sleep
 from datetime import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -40,13 +40,14 @@ def login_to_site(username, password):
         # Wait for the login form to load
         username_field = wait.until(EC.presence_of_element_located((By.ID, settings.LOGIN_USERNAME_FIELD_ID)))
         logging.debug("Search for the username field")
+        # Enter the username
+        username_field.send_keys(username)
+        logging.debug("Fill Username field.")
+        # Enter the password
         password_field = driver.find_element(By.ID, settings.LOGIN_PASSWORD_FIELD_ID)
         logging.debug("Search for the password field")
-
-        # Enter the credentials
-        username_field.send_keys(username)
         password_field.send_keys(password)
-        logging.debug("Fill Username and Password fields.")
+        logging.debug("Fill Password fields.")
 
         # Click the submit button
         submit_button = driver.find_element(By.ID, settings.LOGIN_BUTTON_ID)
