@@ -93,6 +93,7 @@ def get_default_book_date():
     return datetime.now(ZoneInfo('Europe/Madrid')) + timedelta(days=10)
 
 
+
 def get_default_book_time_slot():
     # Set default time slot to 18:00-19:30
     return "18:00-19:30"
