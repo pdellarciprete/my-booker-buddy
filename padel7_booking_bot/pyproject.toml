@@ -5,6 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "my-booker-buddy"
 version = "1.0.0"
+dependencies = [
+    "freezegun>=1.5.3",
+    "pytest>=8.4.1",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]

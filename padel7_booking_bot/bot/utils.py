@@ -3,6 +3,8 @@ import logging
 import config.settings as settings
 import sys
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
 from selenium import webdriver
 from selenium.common.exceptions import JavascriptException
 from selenium.webdriver.chrome.service import Service
@@ -88,11 +90,12 @@ def save_screenshot(driver, filename):
 
 def get_default_book_date():
     # Calculate the date 10 days from today
-    return datetime.now() + timedelta(days=10)
+    return datetime.now(ZoneInfo('Europe/Madrid')) + timedelta(days=10)
+
 
 
 def get_default_book_time_slot():
-    # Calculate the date 10 days from today
+    # Set default time slot to 18:00-19:30
     return "18:00-19:30"
 
 

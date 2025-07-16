@@ -93,14 +93,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--date",
         type=str,
-        help="Date for booking in YYYY-MM-DD format.",
-        default=utils.get_default_book_date().strftime("%Y-%m-%d"),
+        help="Date for booking in YYYY-MM-DD format."
     )
     parser.add_argument(
         "--time",
         type=str,
-        help="Time for booking in HH:MM format.",
-        default=utils.get_default_book_time_slot(),
+        help="Time for booking in HH:MM format."
     )
     parser.add_argument(
         "--court-type",

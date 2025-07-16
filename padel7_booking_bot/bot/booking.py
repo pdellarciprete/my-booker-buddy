@@ -146,7 +146,12 @@ def book_court(driver, court_preferences):
                 (By.ID, "ctl00_ContentPlaceHolderContenido_ButtonPagoSaldo")
             )
         )
-        pay_button.click()
+        is_disabled = pay_button.get_attribute("disabled") is not None
+        if is_disabled:
+            logging.warning("Payment button is disabled. Cannot proceed with booking.")
+            exit(1)
+        else:
+            pay_button.click()
 
         if settings.DRY_RUN:
             logging.info("Dry run mode enabled. Skipping payment confirmation.")
