@@ -14,12 +14,12 @@ COURTS = {
     "1": "Indoor 2",
     "2": "Indoor 3",
     "3": "Indoor 4",
-    "5": "Outdoor 5",
-    "6": "Outdoor 6",
-    "8": "Outdoor 7",
-    "9": "Outdoor 8",
-    "10": "Outdoor 9",
-    "11": "Outdoor 10",
+    "4": "Outdoor 5",
+    "5": "Outdoor 6",
+    "6": "Outdoor 7",
+    "7": "Outdoor 8",
+    "8": "Outdoor 9",
+    "9": "Outdoor 10",
 }
 
 
@@ -110,10 +110,10 @@ def select_best_court(driver, available_slots, court_type):
         court_type = "both"
 
     if court_type.lower() == "indoor":
-        court_number = min([key for key in court_dict.keys() if key < 5])
+        court_number = min([key for key in court_dict.keys() if key < 4])
 
     elif court_type.lower() == "outdoor":
-        court_number = min([key for key in court_dict.keys() if key >= 5])
+        court_number = min([key for key in court_dict.keys() if key >= 4])
     else:
         court_number = min(court_dict.keys())  # precedence to INDOOR COURTS
     

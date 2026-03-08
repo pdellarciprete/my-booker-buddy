@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1
 ENV TERM=xterm
 
 # Install basic utilities
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --fix-broken --no-install-recommends \
     gnupg \
     curl \
     wget \
@@ -16,8 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxi6 \
     chromium \
     chromium-driver \
-    chromium-l10n \
-    libgconf-2-4
+    chromium-l10n
 
 # Copy application files
 ADD . /app
