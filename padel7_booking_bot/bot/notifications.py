@@ -149,15 +149,16 @@ def send_booking_notification(
 
     logging.debug(f"payload : {payload}")
 
-    # Send the payload to the Slack webhook
-    response = requests.post(
-        webhook_url,
-        data=json.dumps(payload),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-        },
-    )
+    if booking_successful is True:
+        # Send the payload to the Slack webhook
+        response = requests.post(
+            webhook_url,
+            data=json.dumps(payload),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {token}",
+            },
+        )
 
     # Check the response from the server
     if response.status_code != 200:
