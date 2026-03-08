@@ -75,6 +75,7 @@ class TestSendSlackNotification(unittest.TestCase):
         )
         print("Test for successful notification passed.")
 
+    @unittest.skip("Skip this test since the booking failure notification is disabled now")
     @patch("bot.notifications.requests.post")
     def test_send_slack_notification_booking_failure(self, mock_post):
 

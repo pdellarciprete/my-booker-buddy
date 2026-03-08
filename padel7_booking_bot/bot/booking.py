@@ -16,12 +16,12 @@ COURTS = {
     "1": "Indoor 2",
     "2": "Indoor 3",
     "3": "Indoor 4",
-    "5": "Outdoor 5",
-    "6": "Outdoor 6",
-    "8": "Outdoor 7",
-    "9": "Outdoor 8",
-    "10": "Outdoor 9",
-    "11": "Outdoor 10",
+    "4": "Outdoor 5",
+    "5": "Outdoor 6",
+    "6": "Outdoor 7",
+    "7": "Outdoor 8",
+    "8": "Outdoor 9",
+    "9": "Outdoor 10",
 }
 
 
@@ -136,14 +136,14 @@ def book_court(driver, court_preferences):
             EC.presence_of_element_located(
                 (
                     By.ID,
-                    "ctl00_ContentPlaceHolderContenido_CheckBoxAceptoCondicionesLegales",
+                    "ContentPlaceHolderContenido_CheckBoxAceptoCondicionesLegales",
                 )
             )
         )
         conditions_checkbox.click()
         pay_button = wait.until(
             EC.presence_of_element_located(
-                (By.ID, "ctl00_ContentPlaceHolderContenido_ButtonPagoSaldo")
+                (By.ID, "ContentPlaceHolderContenido_ButtonPagoSaldo")
             )
         )
         is_disabled = pay_button.get_attribute("disabled") is not None
@@ -162,7 +162,7 @@ def book_court(driver, court_preferences):
             # Payment confirmation
             confirm_payment_button = wait.until(
                 EC.presence_of_element_located(
-                    (By.ID, "ctl00_ContentPlaceHolderContenido_ButtonConfirmar")
+                    (By.ID, "ContentPlaceHolderContenido_ButtonConfirmar")
                 )
             )
             confirm_payment_button.click()
@@ -171,7 +171,7 @@ def book_court(driver, court_preferences):
         
             confirmation_element = wait.until(
                 EC.presence_of_element_located(
-                    (By.ID, "ctl00_ContentPlaceHolderContenido_LabelReservaPistas")
+                    (By.ID, "ContentPlaceHolderContenido_LabelReservaPistas")
                 )
             )
             if "RESERVA CONFIRMADA" in confirmation_element.text:
