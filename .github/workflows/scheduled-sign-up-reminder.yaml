@@ -2,6 +2,7 @@ name: "[Scheduled] Sign up Slack reminder"
 on:
   schedule:
     - cron: "12 10 * * THU"
+  workflow_dispatch: 
 
 jobs:
   send_message:
