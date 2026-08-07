@@ -1,0 +1,32 @@
+README.md
+  s_649d9fcd43b335::t_4d12cba5d3cac4 20-21
+  s_649d9fcd43b335::t_355d80f5131e66 2-19,22-89
+padel7_booking_bot/main.py
+  s_649d9fcd43b335::t_8629c54303ef83 132-135
+  s_649d9fcd43b335::t_35f54b20d4ee3c 126
+  s_649d9fcd43b335::t_64dd8e700c5b22 77-78
+  s_649d9fcd43b335::t_061e35fdeb0a4d 117-122
+  s_649d9fcd43b335::t_4f371116bf97d2 8-9,14-35
+  s_649d9fcd43b335::t_7da894b504950f 36
+  s_649d9fcd43b335::t_32b68ab95e747e 125
+padel7_booking_bot/bot/booking.py
+  s_649d9fcd43b335::t_d5100e93ddc6ff 74-76
+padel7_booking_bot/bot/utils.py
+  s_649d9fcd43b335::t_c7c348a24c0cc9 58-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "957c7597fd5836e57c1f8461102953755216990b",
+  "prompts": {},
+  "sessions": {
+    "s_649d9fcd43b335": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e9fa391e-030b-4641-a2e8-df51595543bf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Alberto Gimenez <algimeneza@gmail.com>"
+    }
+  }
+}
