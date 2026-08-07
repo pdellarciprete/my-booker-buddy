@@ -5,10 +5,34 @@ import config.settings as settings
 import bot.utils as utils
 import bot.notifications as notifications
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from bot.login import login_to_site
 from bot.booking import book_court
 from bot.types import CourtPreferences
+
+_BOT_TZ = ZoneInfo("Europe/Madrid")
+
+
+def wait_until_time(target_time_str: str) -> None:
+    target_time = datetime.strptime(target_time_str, "%H:%M:%S").time()
+    now = datetime.now(_BOT_TZ)
+    target_dt = datetime.combine(now.date(), target_time, tzinfo=_BOT_TZ)
+    if target_dt <= now:
+        target_dt += timedelta(days=1)
+
+    remaining = (target_dt - now).total_seconds()
+    logging.info("Waiting until %s (%.0fs)", target_dt.strftime("%Y-%m-%d %H:%M:%S %Z"), remaining)
+
+    while True:
+        remaining = (target_dt - datetime.now(_BOT_TZ)).total_seconds()
+        if remaining <= 0:
+            break
+        interval = min(10 if remaining > 60 else 1, remaining)
+        logging.info("Starting in %.0fs...", remaining)
+        time.sleep(interval)
+
+    logging.info("Target time reached, proceeding.")
 
 
 def main(court_preferences: CourtPreferences, env: settings.AppSettings) -> None:
@@ -50,8 +74,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Padel7 Booking Bot")
     parser.add_argument(
         "--dry-run",
-        action="store_true",
-        help="Run the bot in dry run mode without making actual bookings.",
+        action=argparse.BooleanOptionalAction,
+        help="Simulate the booking without spending money (default: on). Use --no-dry-run for a real booking.",
         default=True,
     )
     parser.add_argument(
@@ -90,14 +114,24 @@ if __name__ == "__main__":
         help="Padel7 centre to book (default: poblenou).",
         default="poblenou",
     )
+    parser.add_argument(
+        "--wait-until",
+        type=str,
+        metavar="HH:MM:SS",
+        help="Wait until this exact time (Europe/Madrid) before running, e.g. 00:00:00.",
+    )
 
     args = parser.parse_args()
-    if args.dry_run:
-        settings.DRY_RUN = True
+
+    settings.DRY_RUN = args.dry_run
     if args.verbose:
         settings.LOGGING_LEVEL = "DEBUG"
     if args.notifications:
         settings.NOTIFICATION_ENABLED = True
+
+    if args.wait_until:
+        utils.setup_logging()
+        wait_until_time(args.wait_until)
 
     env = settings.AppSettings()
     court_preferences: CourtPreferences = {

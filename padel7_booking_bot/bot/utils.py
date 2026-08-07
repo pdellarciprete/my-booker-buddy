@@ -55,6 +55,9 @@ def save_screenshot(driver: webdriver.Chrome, filename: str) -> None:
     if not os.path.exists(screenshots_dir):
         os.makedirs(screenshots_dir)
     filepath = os.path.join(screenshots_dir, filename)
+    width = driver.execute_script("return document.body.scrollWidth")
+    height = driver.execute_script("return document.body.scrollHeight")
+    driver.set_window_size(width, height)
     driver.save_screenshot(filepath)
     logging.info("Screenshot saved: %s", filepath)
 

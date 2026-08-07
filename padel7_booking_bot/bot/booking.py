@@ -71,11 +71,13 @@ def _complete_booking(driver: webdriver.Chrome) -> bool:
     confirmation = wait.until(EC.presence_of_element_located((
         By.ID, "ContentPlaceHolderContenido_LabelReservaPistas",
     )))
-    if "RESERVA CONFIRMADA" in confirmation.text:
+    confirmation_text = confirmation.text.lower()  # read once before element can go stale
+    logging.debug("Confirmation element text: '%s'", confirmation_text)
+    if "reserva confirmada" in confirmation_text or "reserva de pistes" in confirmation_text:
         logging.info("Booking confirmed successfully!")
         return True
 
-    logging.error("Unexpected confirmation text: '%s'", confirmation.text)
+    logging.error("Unexpected confirmation text: '%s'", confirmation_text)
     return False
 
 
