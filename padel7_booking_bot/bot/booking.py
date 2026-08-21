@@ -68,10 +68,29 @@ def _complete_booking(driver: webdriver.Chrome) -> bool:
     )))
     confirm_button.click()
 
-    confirmation = wait.until(EC.presence_of_element_located((
-        By.ID, "ContentPlaceHolderContenido_LabelReservaPistas",
-    )))
-    confirmation_text = confirmation.text.lower()  # read once before element can go stale
+    # -------------------------------------------------------------------------
+    # FIX: Wait for postback/reload, then safely read confirmation text
+    # -------------------------------------------------------------------------
+
+    # 1. Wait until the old confirm button is removed from the DOM by the postback
+    try:
+        wait.until(EC.staleness_of(confirm_button))
+    except selenium.common.exceptions.TimeoutException:
+        pass  # If it didn't detach in time, attempt finding the element below anyway
+
+    # 2. Fetch the newly rendered label with a retry loop for StaleElementReferenceException
+    for attempt in range(3):
+        try:
+            confirmation = wait.until(EC.presence_of_element_located((
+                By.ID, "ContentPlaceHolderContenido_LabelReservaPistas",
+            )))
+            confirmation_text = confirmation.text.lower()
+            break
+        except selenium.common.exceptions.StaleElementReferenceException:
+            if attempt == 2:
+                raise
+            time.sleep(1)
+
     logging.debug("Confirmation element text: '%s'", confirmation_text)
     if "reserva confirmada" in confirmation_text or "reserva de pistes" in confirmation_text:
         logging.info("Booking confirmed successfully!")
