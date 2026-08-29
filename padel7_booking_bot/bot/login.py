@@ -17,20 +17,33 @@ def login_to_site(username: str, password: str, env: str) -> webdriver.Chrome:
 
         wait = WebDriverWait(driver, 10)
 
+        # 1. Click Cookie Button
         refuse_cookies_button = wait.until(
-            EC.presence_of_element_located((By.ID, settings.LOGIN_REFUSE_COOKIES_BUTTON_ID))
+            EC.element_to_be_clickable((By.ID, settings.LOGIN_REFUSE_COOKIES_BUTTON_ID))
         )
         refuse_cookies_button.click()
 
+        # 2. (Optional but safer) Wait for overlay to disappear if present
+        wait.until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "banner-block-screen"))
+        )
+
+        # 3. Fill Username
         username_field = wait.until(
-            EC.presence_of_element_located((By.ID, settings.LOGIN_USERNAME_FIELD_ID))
+            EC.element_to_be_clickable((By.ID, settings.LOGIN_USERNAME_FIELD_ID))
         )
         username_field.send_keys(username)
 
-        password_field = driver.find_element(By.ID, settings.LOGIN_PASSWORD_FIELD_ID)
+        # 4. Fill Password
+        password_field = wait.until(
+            EC.element_to_be_clickable((By.ID, settings.LOGIN_PASSWORD_FIELD_ID))
+        )
         password_field.send_keys(password)
 
-        submit_button = driver.find_element(By.ID, settings.LOGIN_BUTTON_ID)
+        # 5. Wait for Submit Button to be Clickable
+        submit_button = wait.until(
+            EC.element_to_be_clickable((By.ID, settings.LOGIN_BUTTON_ID))
+        )
         submit_button.click()
 
         wait.until(EC.url_changes(settings.LOGIN_URL))
