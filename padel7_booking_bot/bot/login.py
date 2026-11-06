@@ -17,35 +17,41 @@ def login_to_site(username: str, password: str, env: str) -> webdriver.Chrome:
 
         wait = WebDriverWait(driver, 10)
 
-        # 1. Click Cookie Button
-        refuse_cookies_button = wait.until(
-            EC.element_to_be_clickable((By.ID, settings.LOGIN_REFUSE_COOKIES_BUTTON_ID))
-        )
-        refuse_cookies_button.click()
+        # 1. Dismiss Cookie Banner using JavaScript (bypasses UI intercept)
+        try:
+            refuse_cookies_button = wait.until(
+                EC.presence_of_element_located((By.ID, settings.LOGIN_REFUSE_COOKIES_BUTTON_ID))
+            )
+            driver.execute_script("arguments[0].click();", refuse_cookies_button)
+        except Exception as e:
+            logging.warning("Cookie banner not found or already closed: %s", e)
 
-        # 2. (Optional but safer) Wait for overlay to disappear if present
+        # 2. Wait until the overlay screen completely vanishes from DOM
         wait.until(
             EC.invisibility_of_element_located((By.CLASS_NAME, "banner-block-screen"))
         )
 
         # 3. Fill Username
         username_field = wait.until(
-            EC.element_to_be_clickable((By.ID, settings.LOGIN_USERNAME_FIELD_ID))
+            EC.visibility_of_element_located((By.ID, settings.LOGIN_USERNAME_FIELD_ID))
         )
+        username_field.clear()
         username_field.send_keys(username)
 
         # 4. Fill Password
         password_field = wait.until(
-            EC.element_to_be_clickable((By.ID, settings.LOGIN_PASSWORD_FIELD_ID))
+            EC.visibility_of_element_located((By.ID, settings.LOGIN_PASSWORD_FIELD_ID))
         )
+        password_field.clear()
         password_field.send_keys(password)
 
-        # 5. Wait for Submit Button to be Clickable
+        # 5. Click Submit Button via JavaScript to bypass any remaining transparent backdrops
         submit_button = wait.until(
-            EC.element_to_be_clickable((By.ID, settings.LOGIN_BUTTON_ID))
+            EC.presence_of_element_located((By.ID, settings.LOGIN_BUTTON_ID))
         )
-        submit_button.click()
+        driver.execute_script("arguments[0].click();", submit_button)
 
+        # 6. Wait for navigation after login submission
         wait.until(EC.url_changes(settings.LOGIN_URL))
         logging.debug("Landed in the user profile page: %s", driver.current_url)
 
