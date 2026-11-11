@@ -4,7 +4,7 @@
       "type":"section",
       "text":{
         "type":"mrkdwn",
-        "text":"*🎾 Sign Up Thread: Pádel for $WEEK_DAY $DATE, 18:00-19:30 (3 Courts, 12 People) 🎾* @here"
+        "text":"*🎾 Sign Up Thread: Pádel for $WEEK_DAY $DATE, 18:00-19:30 (2 Courts, 8 People) 🎾* @here \n:warning: ONLY PLAYTOMIC LEVEL 2+"
       }
     },
     {
@@ -21,7 +21,7 @@
       "type":"section",
       "text":{
         "type":"mrkdwn",
-        "text":":thread: *Please add your comment in the thread to say you paid or mark a :done_green: on your comment.* Based on the number of people, we will reduce courts if necessary (e.g., if fewer than 12, it will be 2 courts)."
+        "text":":thread: *Please add your comment in the thread to say you paid or mark a :done_green: on your comment.* Based on the number of people, we will reduce courts if necessary (e.g., if fewer than 8, it will be 1 court)."
       }
     },
     {
