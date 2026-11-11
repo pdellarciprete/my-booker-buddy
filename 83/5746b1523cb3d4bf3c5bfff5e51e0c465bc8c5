@@ -1,0 +1,14 @@
+.github/utils/message_template.json
+  h_cc4da17930ae27 7,24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "835746b1523cb3d4bf3c5bfff5e51e0c465bc8c5",
+  "prompts": {},
+  "humans": {
+    "h_cc4da17930ae27": {
+      "author": "Alberto Gimenez <algimeneza@gmail.com>"
+    }
+  }
+}
