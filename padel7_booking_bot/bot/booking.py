@@ -41,18 +41,27 @@ def _find_available_slots(driver: webdriver.Chrome, time_slot: str) -> list:
 
 def _complete_booking(driver: webdriver.Chrome) -> bool:
     wait = WebDriverWait(driver, 10)
-    time.sleep(2)
 
-    terms_checkbox = wait.until(EC.presence_of_element_located((By.ID, "terminos")))
-    terms_checkbox.click()
-    driver.find_element(By.ID, "groupButtons").click()
+    # 1. Wait for the new #fichaCuadroV2 modal checkbox and tick it
+    terms_checkbox = wait.until(EC.element_to_be_clickable((
+        By.CSS_SELECTOR, "#fichaCuadroV2 label.fichaV2Normas input[type='checkbox']"
+    )))
+    if not terms_checkbox.is_selected():
+        terms_checkbox.click()
 
+    # 2. Click the "90min Internet" option button inside #fichaCuadroV2
+    duration_button = wait.until(EC.element_to_be_clickable((
+        By.CSS_SELECTOR, "#fichaCuadroV2 .fichaV2Opciones a.fichaV2Opcion"
+    )))
+    duration_button.click()
+
+    # 3. Payment / confirmation page
     conditions_checkbox = wait.until(EC.presence_of_element_located((
         By.ID, "ContentPlaceHolderContenido_CheckBoxAceptoCondicionesLegales",
     )))
     driver.execute_script("arguments[0].click();", conditions_checkbox)
 
-    pay_button = wait.until(EC.presence_of_element_located((
+    pay_button = wait.until(EC.element_to_be_clickable((
         By.ID, "ContentPlaceHolderContenido_ButtonPagoSaldo",
     )))
     if pay_button.get_attribute("disabled") is not None:
@@ -63,22 +72,16 @@ def _complete_booking(driver: webdriver.Chrome) -> bool:
         logging.info("Dry run mode: skipping payment confirmation.")
         return True
 
-    confirm_button = wait.until(EC.presence_of_element_located((
+    confirm_button = wait.until(EC.element_to_be_clickable((
         By.ID, "ContentPlaceHolderContenido_ButtonConfirmar",
     )))
     confirm_button.click()
 
-    # -------------------------------------------------------------------------
-    # FIX: Wait for postback/reload, then safely read confirmation text
-    # -------------------------------------------------------------------------
-
-    # 1. Wait until the old confirm button is removed from the DOM by the postback
     try:
         wait.until(EC.staleness_of(confirm_button))
     except selenium.common.exceptions.TimeoutException:
-        pass  # If it didn't detach in time, attempt finding the element below anyway
+        pass
 
-    # 2. Fetch the newly rendered label with a retry loop for StaleElementReferenceException
     for attempt in range(3):
         try:
             confirmation = wait.until(EC.presence_of_element_located((

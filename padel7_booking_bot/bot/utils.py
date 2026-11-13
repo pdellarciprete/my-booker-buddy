@@ -38,6 +38,7 @@ def create_chrome_driver(env: str = "docker") -> webdriver.Chrome:
 
     if env == "docker":
         options.add_argument("--headless=new")  # comment for local
+        options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-infobars")
