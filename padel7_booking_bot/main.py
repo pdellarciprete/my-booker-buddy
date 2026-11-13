@@ -5,74 +5,68 @@ import config.settings as settings
 import bot.utils as utils
 import bot.notifications as notifications
 import argparse
-from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from bot.login import login_to_site
 from bot.booking import book_court
-import selenium.common.exceptions
+from bot.types import CourtPreferences
+
+_BOT_TZ = ZoneInfo("Europe/Madrid")
 
 
-def main(court_preferences):
-    """
-    Main function to orchestrate the bot workflow.
-    """
-    # Initialize logging
+def wait_until_time(target_time_str: str) -> None:
+    target_time = datetime.strptime(target_time_str, "%H:%M:%S").time()
+    now = datetime.now(_BOT_TZ)
+    target_dt = datetime.combine(now.date(), target_time, tzinfo=_BOT_TZ)
+    if target_dt <= now:
+        target_dt += timedelta(days=1)
+
+    remaining = (target_dt - now).total_seconds()
+    logging.info("Waiting until %s (%.0fs)", target_dt.strftime("%Y-%m-%d %H:%M:%S %Z"), remaining)
+
+    while True:
+        remaining = (target_dt - datetime.now(_BOT_TZ)).total_seconds()
+        if remaining <= 0:
+            break
+        interval = min(10 if remaining > 60 else 1, remaining)
+        logging.info("Starting in %.0fs...", remaining)
+        time.sleep(interval)
+
+    logging.info("Target time reached, proceeding.")
+
+
+def main(court_preferences: CourtPreferences, env: settings.AppSettings) -> None:
     utils.setup_logging()
     logging.debug("Starting the Padel7 booking bot.")
-    logging.debug("Current logging level: %s", settings.LOGGING_LEVEL)
 
-    # Set the TZ environment variable for Europe/Madrid timezone
     os.environ["TZ"] = "Europe/Madrid"
-    # If the operating system supports, apply the timezone
     if hasattr(time, "tzset"):
         time.tzset()
 
-    # Load environment variables from .env file
-    logging.debug("Loading environment variables from .env file.")
-    load_dotenv()
-
-    # Retrieve credentials from environment variables
-    username = os.getenv("APP_USERNAME")
-    password = os.getenv("APP_PASSWORD")
-
-    if not username or not password:
-        logging.error("Username or password not found in environment variables.")
-        return
-
-    # Perform login and booking
-
     logging.debug("Attempting to log in to the site.")
-    driver = login_to_site(username, password)
-    logging.info("Login successful with the username : %s", username)
+    driver = login_to_site(env.app_username, env.app_password, env.env)
+    logging.info("Login successful with the username: %s", env.app_username)
 
-    logging.debug(
-            "Attempting to book a court with preferences: %s", court_preferences
-        )
-    booking_details, booking_succesful = book_court(driver, court_preferences)
-    if booking_succesful is True:
+    logging.debug("Attempting to book a court with preferences: %s", court_preferences)
+    booking_details, booking_successful = book_court(driver, court_preferences)
+    if booking_successful:
         logging.info("Court booked successfully!")
     else:
         logging.error("Court booking failed.")
         logging.debug("Booking details: %s", booking_details)
+
     if "driver" in locals():
-        logging.debug("Taking a final screenshot before closing the WebDriver.")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         utils.save_screenshot(driver, f"final_state_{timestamp}.png")
-        logging.debug("Closing the WebDriver instance.")
         driver.quit()
 
-    # Send notification
     if settings.NOTIFICATION_ENABLED:
-        webhook_url = (
-            os.getenv("APP_SLACK_TEST_WEBHOOK_URL")
-            if settings.DRY_RUN
-            else os.getenv("APP_SLACK_PROD_WEBHOOK_URL")
-        )
+        webhook_url = env.app_slack_test_webhook_url if settings.DRY_RUN else env.app_slack_prod_webhook_url
         notifications.send_booking_notification(
             webhook_url,
-            os.getenv("APP_SLACK_TOKEN"),
+            env.app_slack_token,
             booking_details,
-            booking_succesful,
+            booking_successful,
         )
 
 
@@ -80,9 +74,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Padel7 Booking Bot")
     parser.add_argument(
         "--dry-run",
-        action="store_true",
-        help="Run the bot in dry run mode without making actual bookings.",
-        default=False,
+        action=argparse.BooleanOptionalAction,
+        help="Simulate the booking without spending money (default: on). Use --no-dry-run for a real booking.",
+        default=True,
     )
     parser.add_argument(
         "--verbose",
@@ -93,12 +87,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--date",
         type=str,
-        help="Date for booking in YYYY-MM-DD format."
+        help="Date for booking in YYYY-MM-DD format.",
     )
     parser.add_argument(
         "--time",
         type=str,
-        help="Time for booking in HH:MM format."
+        help="Time for booking in HH:MM format.",
     )
     parser.add_argument(
         "--court-type",
@@ -113,18 +107,39 @@ if __name__ == "__main__":
         help="Enable Slack notifications.",
         default=settings.NOTIFICATION_ENABLED,
     )
+    parser.add_argument(
+        "--centre",
+        type=str,
+        choices=list(settings.VENUES.keys()),
+        help="Padel7 centre to book (default: poblenou).",
+        default="poblenou",
+    )
+    parser.add_argument(
+        "--wait-until",
+        type=str,
+        metavar="HH:MM:SS",
+        help="Wait until this exact time (Europe/Madrid) before running, e.g. 00:00:00.",
+    )
 
     args = parser.parse_args()
-    if args.dry_run:
-        settings.DRY_RUN = True
+
+    settings.DRY_RUN = args.dry_run
     if args.verbose:
         settings.LOGGING_LEVEL = "DEBUG"
     if args.notifications:
         settings.NOTIFICATION_ENABLED = True
-    court_preferences = {
+
+    if args.wait_until:
+        utils.setup_logging()
+        wait_until_time(args.wait_until)
+
+    env = settings.AppSettings()
+    court_preferences: CourtPreferences = {
         "date": args.date,
         "time": args.time,
         "court_type": args.court_type,
+        "venue_config": settings.VENUES[args.centre],
+        "booked_by": env.app_username.split("@")[0],
     }
 
-    main(court_preferences)
+    main(court_preferences, env)

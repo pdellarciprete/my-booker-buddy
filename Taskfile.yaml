@@ -1,0 +1,68 @@
+version: '3'
+
+vars:
+  IMAGE_NAME: padel7-booking-bot
+  IMAGE_TAG: 0.0.1
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+
+  setup:
+    desc: Install dependencies and create output directories
+    dir: padel7_booking_bot
+    cmds:
+      - mkdir -p screenshots logs
+      - uv sync
+
+  test:
+    desc: Run pytest suite
+    dir: padel7_booking_bot
+    cmds:
+      - uv run pytest {{.CLI_ARGS}}
+
+  dry-run:
+    desc: Run bot locally in dry-run mode
+    dir: padel7_booking_bot
+    cmds:
+      - uv run python main.py --dry-run {{.CLI_ARGS}}
+
+  docker:build:
+    desc: Build the Docker image
+    dir: padel7_booking_bot
+    cmds:
+      - docker build -t {{.IMAGE_NAME}}:{{.IMAGE_TAG}} .
+
+  docker:dry-run:
+    desc: Run Docker container in dry-run mode with mounted volumes
+    dir: padel7_booking_bot
+    cmds:
+      - mkdir -p screenshots logs
+      - >
+        docker run --rm
+        --env-file .env
+        -v $(pwd)/screenshots:/app/screenshots
+        -v $(pwd)/logs:/app/logs
+        {{.IMAGE_NAME}}:{{.IMAGE_TAG}}
+        --dry-run {{.CLI_ARGS}}
+
+  docker:real-run:
+    desc: Run a live booking inside Docker with mounted volumes
+    dir: padel7_booking_bot
+    cmds:
+      - mkdir -p screenshots logs
+      - >
+        docker run --rm
+        --env-file .env
+        -v $(pwd)/screenshots:/app/screenshots
+        -v $(pwd)/logs:/app/logs
+        {{.IMAGE_NAME}}:{{.IMAGE_TAG}}
+        --no-dry-run {{.CLI_ARGS}}
+
+  clean:
+    desc: Clear saved screenshots and logs
+    dir: padel7_booking_bot
+    cmds:
+      - rm -f screenshots/*.png logs/*.log

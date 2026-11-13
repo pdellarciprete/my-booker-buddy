@@ -5,10 +5,25 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "my-booker-buddy"
 version = "1.0.0"
+requires-python = ">=3.12"
 dependencies = [
-    "freezegun>=1.5.3",
-    "pytest>=8.4.1",
+    "selenium==4.46.0",
+    "pydantic-settings==2.14.2",
+    "requests==2.34.2",
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest==9.1.1",
+    "freezegun==1.5.5",
+    "python-dotenv==1.2.2",
+]
+
+[tool.ruff]
+line-length = 120
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

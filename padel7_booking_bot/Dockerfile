@@ -1,12 +1,14 @@
-# Use a base image with minimal size and multi-arch support
 FROM --platform=$BUILDPLATFORM python:3.12-slim
 
-# Set environment variables
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV TERM=xterm
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+ENV UV_LINK_MODE=copy
 
-# Install basic utilities
 RUN apt-get update && apt-get install -y --fix-broken --no-install-recommends \
     gnupg \
     curl \
@@ -18,12 +20,11 @@ RUN apt-get update && apt-get install -y --fix-broken --no-install-recommends \
     chromium-driver \
     chromium-l10n
 
-# Copy application files
 ADD . /app
 WORKDIR /app
 
-# Install Python dependencies
-RUN pip install -r requirements.txt --no-cache-dir
+RUN uv sync --frozen --no-dev
 
-# Set the entrypoint
+RUN mkdir -p logs screenshots
+
 ENTRYPOINT ["python", "main.py"]
